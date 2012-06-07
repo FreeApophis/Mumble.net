@@ -11,6 +11,7 @@ using MumbleProto;
 using System.Threading;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
+using System.Diagnostics;
 
 namespace Protocols.Mumble
 {
@@ -65,7 +66,9 @@ namespace Protocols.Mumble
 
             connected = true;
 
+#if DEBUG
             PacketReceivedEvent += OnPacketEvent;
+#endif
 
             listenThread = new Thread(Listen);
             listenThread.Start();
@@ -101,9 +104,11 @@ namespace Protocols.Mumble
             MumbleWrite(message);
         }
 
-        public void SendUDPTunnel()
+        public void SendUDPTunnel(byte[] packet)
         {
             var message = new MumbleProto.UDPTunnel();
+
+            message.packet = packet;
 
             MumbleWrite(message);
         }

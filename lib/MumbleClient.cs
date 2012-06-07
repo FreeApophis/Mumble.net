@@ -30,12 +30,18 @@ namespace Protocols.Mumble
             }
         }
 
+        public MumbleUser ClientUser { get; private set; }
+
         public string Version { get; private set; }
 
         public uint serverVersion;
         public string ServerOS { get; private set; }
         public string ServerOSVersion { get; private set; }
         public string ServerRelease { get; set; }
+
+        public string WelcomeText { get; private set; }
+        public uint MaxBandwith { get; private set; }
+
 
         public MumbleClient(string version)
         {
@@ -64,6 +70,20 @@ namespace Protocols.Mumble
             ServerOSVersion = message.os;
             ServerRelease = message.release;
             serverVersion = message.version;
+        }
+
+        public void Update(ServerSync message)
+        {
+            if (message.sessionSpecified) { ClientUser = users[message.session]; }
+            if (message.max_bandwidthSpecified) { MaxBandwith = message.max_bandwidth; }
+            if (message.welcome_textSpecified) { WelcomeText = message.welcome_text; }
+        }
+
+        private UInt64 sequence = 1;
+
+        internal UInt64 NextSequence()
+        {
+            return sequence+=2;
         }
     }
 }

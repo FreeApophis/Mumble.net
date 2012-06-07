@@ -62,7 +62,6 @@ namespace MumbleProto
         public void HandleMessage(MumbleClient client)
         {
             client.Update(this);
-            System.Console.WriteLine("VERSION HANDLER");
         }
     }
 
@@ -70,7 +69,22 @@ namespace MumbleProto
     {
         public void HandleMessage(MumbleClient client)
         {
+            var audioIn = new AudioPacket(this.packet);
 
+            var type = audioIn.DecodeTypeTarget();
+            var session = audioIn.DecodeVarint();
+            var sequence = audioIn.DecodeVarint();
+
+            System.Console.WriteLine(sequence);
+
+            var audioOut = new AudioPacket();
+
+            audioOut.EncodeTypeTarget(type);
+            audioOut.EncodeVarint(client.ClientUser.Session);
+            audioOut.EncodeVarint(sequence + 5000);
+            audioOut.Payload = audioIn.Payload;
+
+            client.SendUDPTunnel(audioOut.Packet);
         }
     }
 
@@ -102,7 +116,7 @@ namespace MumbleProto
     {
         public void HandleMessage(MumbleClient client)
         {
-
+            client.Update(this);
         }
     }
 
@@ -132,6 +146,12 @@ namespace MumbleProto
     {
         public void HandleMessage(MumbleClient client)
         {
+            MumbleUser user;
+            if (client.Users.TryGetValue(this.session, out user))
+            {
+                user.Update(this);
+            }
+
 
         }
     }
