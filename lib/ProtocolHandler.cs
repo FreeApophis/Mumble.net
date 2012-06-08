@@ -78,9 +78,11 @@ namespace MumbleProto
             System.Console.WriteLine(sequence);
 
             var audioOut = new AudioPacket();
+            
+            type.Target = 0;
 
             audioOut.EncodeTypeTarget(type);
-            audioOut.EncodeVarint(client.ClientUser.Session);
+            //audioOut.EncodeVarint(client.ClientUser.Session);
             audioOut.EncodeVarint(sequence + 5000);
             audioOut.Payload = audioIn.Payload;
 
