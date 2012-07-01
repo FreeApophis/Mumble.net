@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Reflection;
 using Protocols.Mumble;
-
-
 
 namespace MumbleProto
 {
@@ -25,16 +22,16 @@ namespace MumbleProto
             var properties = type.GetProperties();
             foreach (var property in properties)
             {
-                if (property.IsDefined(typeof(ProtoBuf.ProtoMemberAttribute), false))
+                if (!property.IsDefined(typeof(ProtoBuf.ProtoMemberAttribute), false)) { continue; }
+
+                PropertyInfo prop = property;
+                var specified = properties.Where(p => p.Name == prop.Name + "Specified").FirstOrDefault();
+                bool? hasField = null;
+                if (specified != null)
                 {
-                    var specified = properties.Where(p => p.Name == property.Name + "Specified").FirstOrDefault();
-                    bool? hasField = null;
-                    if (specified != null)
-                        hasField = specified.GetValue(message, null) as bool?;
-
-                    result += " " + property.Name + ": " + FormatValue(hasField, property.GetValue(message, null)) + Environment.NewLine;
+                    hasField = specified.GetValue(message, null) as bool?;
                 }
-
+                result += " " + property.Name + ": " + FormatValue(hasField, property.GetValue(message, null)) + Environment.NewLine;
             }
 
             return result;
@@ -69,16 +66,16 @@ namespace MumbleProto
     {
         public void HandleMessage(MumbleClient client)
         {
-            var audioIn = new AudioPacket(this.packet);
+            var audioIn = new AudioPacket(packet);
 
             var type = audioIn.DecodeTypeTarget();
             var session = audioIn.DecodeVarint();
             var sequence = audioIn.DecodeVarint();
 
-            System.Console.WriteLine(sequence);
+            Console.WriteLine(sequence);
 
             var audioOut = new AudioPacket();
-            
+
             type.Target = 0;
 
             audioOut.EncodeTypeTarget(type);
@@ -135,7 +132,7 @@ namespace MumbleProto
         public void HandleMessage(MumbleClient client)
         {
             MumbleChannel channel;
-            if (!client.Channels.TryGetValue(this.channel_id, out channel))
+            if (!client.Channels.TryGetValue(channel_id, out channel))
             {
                 channel = new MumbleChannel(client, this);
             }
@@ -149,7 +146,7 @@ namespace MumbleProto
         public void HandleMessage(MumbleClient client)
         {
             MumbleUser user;
-            if (client.Users.TryGetValue(this.session, out user))
+            if (client.Users.TryGetValue(session, out user))
             {
                 user.Update(this);
             }
@@ -163,7 +160,7 @@ namespace MumbleProto
         public void HandleMessage(MumbleClient client)
         {
             MumbleUser user;
-            if (!client.Users.TryGetValue(this.session, out user))
+            if (!client.Users.TryGetValue(session, out user))
             {
                 user = new MumbleUser(client, this);
             }

@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Net.Sockets;
 using System.IO;
 using System.Net;
-
-using ProtoBuf;
-using MumbleProto;
-using System.Threading;
 using System.Net.Security;
+using System.Net.Sockets;
 using System.Security.Cryptography.X509Certificates;
-using System.Diagnostics;
+using System.Threading;
+using MumbleProto;
+using ProtoBuf;
 
 namespace Protocols.Mumble
 {
@@ -19,12 +15,12 @@ namespace Protocols.Mumble
 
     public class MumbleConnection
     {
-        private int port;
-        private string host;
+        private readonly int port;
+        private readonly string host;
         private bool connected;
 
-        private uint mumbleVersion;
-        private string username;
+        private readonly uint mumbleVersion;
+        private readonly string username;
 
         private TcpClient tcpClient;
         private SslStream sslStream;
@@ -83,12 +79,13 @@ namespace Protocols.Mumble
 
         public void SendVersion(string clientVersion)
         {
-            var message = new MumbleProto.Version();
-
-            message.release = clientVersion;
-            message.version = mumbleVersion;
-            message.os = Environment.OSVersion.Platform.ToString();
-            message.os_version = Environment.OSVersion.VersionString;
+            var message = new MumbleProto.Version
+            {
+                release = clientVersion,
+                version = mumbleVersion,
+                os = Environment.OSVersion.Platform.ToString(),
+                os_version = Environment.OSVersion.VersionString
+            };
 
             MumbleWrite(message);
         }
@@ -96,9 +93,8 @@ namespace Protocols.Mumble
 
         public void SendAuthenticate()
         {
-            var message = new MumbleProto.Authenticate();
+            var message = new Authenticate { username = username };
 
-            message.username = username;
             message.celt_versions.Add(-2147483637);
 
             MumbleWrite(message);
@@ -106,170 +102,172 @@ namespace Protocols.Mumble
 
         public void SendUDPTunnel(byte[] packet)
         {
-            var message = new MumbleProto.UDPTunnel();
-
-            message.packet = packet;
+            var message = new UDPTunnel { packet = packet };
 
             MumbleWrite(message);
         }
 
         public void SendPing()
         {
-            var message = new MumbleProto.Ping();
+            var message = new Ping();
 
             MumbleWrite(message);
         }
 
         public void SendReject()
         {
-            var message = new MumbleProto.Reject();
+            var message = new Reject();
 
             MumbleWrite(message);
         }
 
         public void SendServerSync()
         {
-            var message = new MumbleProto.ServerSync();
+            var message = new ServerSync();
 
             MumbleWrite(message);
         }
 
         public void SendChannelRemove()
         {
-            var message = new MumbleProto.ChannelRemove();
+            var message = new ChannelRemove();
 
             MumbleWrite(message);
         }
 
         public void SendChannelState()
         {
-            var message = new MumbleProto.ChannelState();
+            var message = new ChannelState();
 
             MumbleWrite(message);
         }
 
         public void SendUserRemove()
         {
-            var message = new MumbleProto.UserRemove();
+            var message = new UserRemove();
 
             MumbleWrite(message);
         }
 
         public void SendUserState()
         {
-            var message = new MumbleProto.UserState();
+            var message = new UserState();
 
             MumbleWrite(message);
         }
 
         public void SendBanList()
         {
-            var message = new MumbleProto.BanList();
+            var message = new BanList();
 
             MumbleWrite(message);
         }
 
         public void SendTextMessage()
         {
-            var message = new MumbleProto.TextMessage();
+            var message = new TextMessage();
 
             MumbleWrite(message);
         }
 
         public void SendPermissionDenied()
         {
-            var message = new MumbleProto.PermissionDenied();
+            var message = new PermissionDenied();
 
             MumbleWrite(message);
         }
 
         public void SendACL()
         {
-            var message = new MumbleProto.ACL();
+            var message = new ACL();
 
             MumbleWrite(message);
         }
 
         public void SendQueryUsers()
         {
-            var message = new MumbleProto.QueryUsers();
+            var message = new QueryUsers();
 
             MumbleWrite(message);
         }
 
         public void SendCryptSetup()
         {
-            var message = new MumbleProto.CryptSetup();
+            var message = new CryptSetup();
 
             MumbleWrite(message);
         }
 
         public void SendContextActionModify()
         {
-            var message = new MumbleProto.ContextActionModify();
+            var message = new ContextActionModify();
 
             MumbleWrite(message);
         }
 
         public void SendContextAction()
         {
-            var message = new MumbleProto.ContextAction();
+            var message = new ContextAction();
 
             MumbleWrite(message);
         }
 
         public void SendUserList()
         {
-            var message = new MumbleProto.UserList();
+            var message = new UserList();
 
             MumbleWrite(message);
         }
 
         public void SendVoiceTarget()
         {
-            var message = new MumbleProto.VoiceTarget();
+            var message = new VoiceTarget();
 
             MumbleWrite(message);
         }
 
         public void SendPermissionQuery()
         {
-            var message = new MumbleProto.PermissionQuery();
+            var message = new PermissionQuery();
 
             MumbleWrite(message);
         }
 
         public void SendCodecVersion()
         {
-            var message = new MumbleProto.CodecVersion();
+            var message = new CodecVersion();
 
             MumbleWrite(message);
         }
 
         public void SendUserStats()
         {
-            var message = new MumbleProto.UserStats();
+            var message = new UserStats();
 
             MumbleWrite(message);
         }
 
-        public void SendRequestBlob()
+        public void SendRequestBlob(IEnumerable<UInt32> sessionTexture, IEnumerable<UInt32> sessionComment, IEnumerable<UInt32> channelDescription)
         {
-            var message = new MumbleProto.RequestBlob();
+            var message = new RequestBlob();
+
+            message.session_texture.AddRange(sessionTexture);
+            message.session_comment.AddRange(sessionComment);
+            message.channel_description.AddRange(channelDescription);
 
             MumbleWrite(message);
         }
 
         public void SendServerConfig()
         {
-            var message = new MumbleProto.ServerConfig();
+            var message = new ServerConfig();
 
             MumbleWrite(message);
         }
 
         public void SendSuggestConfig()
         {
-            var message = new MumbleProto.SuggestConfig();
+            var message = new SuggestConfig();
 
             MumbleWrite(message);
         }
@@ -278,7 +276,7 @@ namespace Protocols.Mumble
 
         #region Private Methods
 
-        private bool ValidateServerCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+        private static bool ValidateServerCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
         {
             return true;
         }
@@ -302,11 +300,11 @@ namespace Protocols.Mumble
             connected = false;
         }
 
-        private void OnPacketEvent(object sender, MumblePacketEventArgs args)
+        private static void OnPacketEvent(object sender, MumblePacketEventArgs args)
         {
             var proto = args.Message as IProtocolHandler;
 
-            System.Console.WriteLine(proto.Inspect());
+            Console.WriteLine(proto.Inspect());
         }
 
 
@@ -326,8 +324,8 @@ namespace Protocols.Mumble
             {
                 var audioMessage = message as UDPTunnel;
 
-                Int16 messageType = (Int16)MumbleProtocolFactory.MessageType(message);
-                Int32 messageSize = (Int32)audioMessage.packet.Length;
+                var messageType = (Int16)MumbleProtocolFactory.MessageType(message);
+                var messageSize = (Int32)audioMessage.packet.Length;
 
                 sslStreamWriter.Write(IPAddress.HostToNetworkOrder(messageType));
                 sslStreamWriter.Write(IPAddress.HostToNetworkOrder(messageSize));
@@ -335,11 +333,11 @@ namespace Protocols.Mumble
             }
             else
             {
-                MemoryStream messageStream = new MemoryStream();
+                var messageStream = new MemoryStream();
                 Serializer.NonGeneric.Serialize(messageStream, message);
 
-                Int16 messageType = (Int16)MumbleProtocolFactory.MessageType(message);
-                Int32 messageSize = (Int32)messageStream.Length;
+                var messageType = (Int16)MumbleProtocolFactory.MessageType(message);
+                var messageSize = (Int32)messageStream.Length;
 
                 sslStreamWriter.Write(IPAddress.HostToNetworkOrder(messageType));
                 sslStreamWriter.Write(IPAddress.HostToNetworkOrder(messageSize));
@@ -353,19 +351,10 @@ namespace Protocols.Mumble
         {
             var sslStreamReader = new BinaryReader(sslStream);
 
-            IExtensible result = null;
-
             Int16 type = IPAddress.NetworkToHostOrder(sslStreamReader.ReadInt16());
             Int32 size = IPAddress.NetworkToHostOrder(sslStreamReader.ReadInt32());
 
-            if (type == (int)MessageTypes.UDPTunnel)
-            {
-                result = new UDPTunnel() { packet = sslStreamReader.ReadBytes(size) };
-            }
-            else
-            {
-                result = MumbleProtocolFactory.Deserialize((MessageTypes)type, size, sslStreamReader);
-            }
+            IExtensible result = type == (int)MessageTypes.UDPTunnel ? new UDPTunnel { packet = sslStreamReader.ReadBytes(size) } : MumbleProtocolFactory.Deserialize((MessageTypes)type, size, sslStreamReader);
             return result;
         }
 

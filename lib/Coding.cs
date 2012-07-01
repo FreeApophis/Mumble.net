@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.IO;
 
 namespace Protocols.Mumble
 {
@@ -14,18 +12,15 @@ namespace Protocols.Mumble
 
     public class AudioPacket
     {
-        private int index = 0;
-        private byte[] packet;
-        private List<byte> encoderPacket;
+        private int index;
+        private readonly byte[] packet;
+        private readonly List<byte> encoderPacket;
 
         public byte[] Packet
         {
             get
             {
-                if (decode)
-                    return packet;
-                else
-                    return encoderPacket.ToArray();
+                return decode ? packet : encoderPacket.ToArray();
             }
         }
 
@@ -43,7 +38,7 @@ namespace Protocols.Mumble
         }
 
 
-        private bool decode;
+        private readonly bool decode;
 
         public AudioPacket(byte[] packet)
         {
@@ -59,12 +54,11 @@ namespace Protocols.Mumble
 
         public TypeTarget DecodeTypeTarget()
         {
-            byte head = (byte)Next();
-
+            var head = (byte)Next();
             var target = (head & 0xE0) >> 5;
             var type = (head & 0x1F);
 
-            return new TypeTarget() { Target = target, Type = type };
+            return new TypeTarget { Target = target, Type = type };
         }
 
         public void EncodeTypeTarget(TypeTarget value)
@@ -84,10 +78,7 @@ namespace Protocols.Mumble
                     encoderPacket.Add((byte)(0xFC | value));
                     return;
                 }
-                else
-                {
-                    encoderPacket.Add(0xF8);
-                }
+                encoderPacket.Add(0xF8);
             }
             if (value < 0x80)
             {
@@ -145,7 +136,7 @@ namespace Protocols.Mumble
 
             index++;
 
-            return (UInt64)result;
+            return result;
         }
 
         public UInt64 DecodeVarint()
@@ -160,7 +151,7 @@ namespace Protocols.Mumble
             }
             else if ((head & 0xC0) == 0x80)
             {
-                result = (UInt64)((head & 0x3F) << 8 | Next());
+                result = (head & 0x3F) << 8 | Next();
             }
             else if ((head & 0xF0) == 0xF0)
             {

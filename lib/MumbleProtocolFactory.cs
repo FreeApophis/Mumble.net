@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using ProtoBuf;
 using System.IO;
+using System.Linq;
+using ProtoBuf;
 
 namespace Protocols.Mumble
 {
     class MumbleProtocolFactory
     {
-        private static Dictionary<MessageTypes, Type> types = new Dictionary<MessageTypes, Type> 
+        private static readonly Dictionary<MessageTypes, Type> Types = new Dictionary<MessageTypes, Type> 
         {
             { MessageTypes.Version, typeof(MumbleProto.Version) },
             { MessageTypes.UDPTunnel, typeof(MumbleProto.UDPTunnel) },
@@ -41,7 +40,7 @@ namespace Protocols.Mumble
 
         public static IExtensible Create(MessageTypes type)
         {
-            var product = types[type];
+            var product = Types[type];
 
             return (IExtensible)Activator.CreateInstance(product);
         }
@@ -50,12 +49,12 @@ namespace Protocols.Mumble
         {
             var messageStream = new MemoryStream(stream.ReadBytes(size));
 
-            return (IExtensible)Serializer.NonGeneric.Deserialize(types[type], messageStream);
+            return (IExtensible)Serializer.NonGeneric.Deserialize(Types[type], messageStream);
         }
 
         public static MessageTypes MessageType(IExtensible mumbleProto)
         {
-            return types.Where(kvp => kvp.Value == mumbleProto.GetType()).First().Key;
+            return Types.Where(kvp => kvp.Value == mumbleProto.GetType()).First().Key;
         }
     }
 }

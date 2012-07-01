@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using MumbleProto;
 
 namespace Protocols.Mumble
 {
     public class MumbleClient : MumbleConnection
     {
-        private Dictionary<UInt32, MumbleChannel> channels = new Dictionary<UInt32, MumbleChannel>();
+        private readonly Dictionary<UInt32, MumbleChannel> channels = new Dictionary<UInt32, MumbleChannel>();
 
         public Dictionary<UInt32, MumbleChannel> Channels
         {
@@ -20,7 +18,7 @@ namespace Protocols.Mumble
 
         public MumbleChannel RootChannel { get; internal set; }
 
-        private Dictionary<UInt32, MumbleUser> users = new Dictionary<UInt32, MumbleUser>();
+        private readonly Dictionary<UInt32, MumbleUser> users = new Dictionary<UInt32, MumbleUser>();
 
         public Dictionary<UInt32, MumbleUser> Users
         {
@@ -30,11 +28,11 @@ namespace Protocols.Mumble
             }
         }
 
-        public MumbleUser ClientUser { get; private set; }
+        public MumbleUser User { get; private set; }
 
         public string Version { get; private set; }
 
-        public uint serverVersion;
+        public uint ServerVersion { get; private set; }
         public string ServerOS { get; private set; }
         public string ServerOSVersion { get; private set; }
         public string ServerRelease { get; set; }
@@ -61,7 +59,7 @@ namespace Protocols.Mumble
         {
             var proto = args.Message as IProtocolHandler;
 
-            proto.HandleMessage(this);
+            if (proto != null) { proto.HandleMessage(this); }
         }
 
         public void Update(MumbleProto.Version message)
@@ -69,12 +67,12 @@ namespace Protocols.Mumble
             ServerOS = message.os;
             ServerOSVersion = message.os;
             ServerRelease = message.release;
-            serverVersion = message.version;
+            ServerVersion = message.version;
         }
 
         public void Update(ServerSync message)
         {
-            if (message.sessionSpecified) { ClientUser = users[message.session]; }
+            if (message.sessionSpecified) { User = users[message.session]; }
             if (message.max_bandwidthSpecified) { MaxBandwith = message.max_bandwidth; }
             if (message.welcome_textSpecified) { WelcomeText = message.welcome_text; }
         }
@@ -83,7 +81,7 @@ namespace Protocols.Mumble
 
         internal UInt64 NextSequence()
         {
-            return sequence+=2;
+            return sequence += 2;
         }
     }
 }

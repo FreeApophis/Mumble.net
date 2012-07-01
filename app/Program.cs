@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Protocols.Mumble;
 
 namespace Mumble.net.app
@@ -14,9 +11,9 @@ namespace Mumble.net.app
 
             client.Connect();
 
-            System.Console.ReadLine();
-            System.Console.WriteLine(client.RootChannel.Tree());
-            System.Console.ReadLine();
+            Console.ReadLine();
+            Console.WriteLine(client.RootChannel.Tree());
+            Console.ReadLine();
 
         }
     }

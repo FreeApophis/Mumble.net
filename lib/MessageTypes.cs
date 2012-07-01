@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿
 namespace Protocols.Mumble
 {
-    enum MessageTypes
+    internal enum MessageTypes
     {
         Version = 0,
         UDPTunnel = 1,

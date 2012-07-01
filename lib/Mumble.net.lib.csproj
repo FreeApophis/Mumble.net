@@ -8,7 +8,7 @@
     <ProjectGuid>{EA577C26-45DD-4D8A-909C-65F8A6E81E12}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Mumble.net.lib</RootNamespace>
+    <RootNamespace>Protocols.Mumble</RootNamespace>
     <AssemblyName>Mumble.net.lib</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
