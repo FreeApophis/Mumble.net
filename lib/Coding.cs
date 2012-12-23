@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Protocols.Mumble
+namespace Protocol.Mumble
 {
     public struct TypeTarget
     {
@@ -13,12 +13,12 @@ namespace Protocols.Mumble
     public class AudioPacket
     {
         private int index;
-        private readonly byte[] packet;
-        private readonly List<byte> encoderPacket;
+        private byte[] packet;
+        private List<byte> encoderPacket;
 
         public byte[] Packet
         {
-            get
+            get 
             {
                 return decode ? packet : encoderPacket.ToArray();
             }
@@ -38,7 +38,7 @@ namespace Protocols.Mumble
         }
 
 
-        private readonly bool decode;
+        private bool decode;
 
         public AudioPacket(byte[] packet)
         {
@@ -54,7 +54,8 @@ namespace Protocols.Mumble
 
         public TypeTarget DecodeTypeTarget()
         {
-            var head = (byte)Next();
+            byte head = (byte)Next();
+
             var target = (head & 0xE0) >> 5;
             var type = (head & 0x1F);
 

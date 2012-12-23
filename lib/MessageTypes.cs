@@ -1,7 +1,6 @@
-﻿
-namespace Protocols.Mumble
+﻿namespace Protocol.Mumble
 {
-    internal enum MessageTypes
+    enum MessageTypes
     {
         Version = 0,
         UDPTunnel = 1,

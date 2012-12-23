@@ -10,7 +10,7 @@
 // Option: missing-value detection (*Specified/ShouldSerialize*/Reset*) enabled
     
 // Generated from: Mumble.proto
-namespace MumbleProto
+namespace Protocol.Mumble
 {
   [global::System.Serializable, global::ProtoBuf.ProtoContract(Name=@"Version")]
   public partial class Version : global::ProtoBuf.IExtensible
@@ -403,11 +403,11 @@ namespace MumbleProto
     public Reject() {}
     
 
-    private MumbleProto.Reject.RejectType? _type;
+    private Reject.RejectType? _type;
     [global::ProtoBuf.ProtoMember(1, IsRequired = false, Name=@"type", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
-    public MumbleProto.Reject.RejectType type
+    public Reject.RejectType type
     {
-      get { return _type?? MumbleProto.Reject.RejectType.None; }
+      get { return _type?? Reject.RejectType.None; }
       set { _type = value; }
     }
     [global::System.Xml.Serialization.XmlIgnore]
@@ -415,7 +415,7 @@ namespace MumbleProto
     public bool typeSpecified
     {
       get { return _type != null; }
-      set { if (value == (_type== null)) _type = value ? type : (MumbleProto.Reject.RejectType?)null; }
+      set { if (value == (_type== null)) _type = value ? type : (Reject.RejectType?)null; }
     }
     private bool ShouldSerializetype() { return typeSpecified; }
     private void Resettype() { typeSpecified = false; }
@@ -1256,9 +1256,9 @@ namespace MumbleProto
   {
     public BanList() {}
     
-    private readonly global::System.Collections.Generic.List<MumbleProto.BanList.BanEntry> _bans = new global::System.Collections.Generic.List<MumbleProto.BanList.BanEntry>();
+    private readonly global::System.Collections.Generic.List<BanEntry> _bans = new global::System.Collections.Generic.List<BanEntry>();
     [global::ProtoBuf.ProtoMember(1, Name=@"bans", DataFormat = global::ProtoBuf.DataFormat.Default)]
-    public global::System.Collections.Generic.List<MumbleProto.BanList.BanEntry> bans
+    public global::System.Collections.Generic.List<BanEntry> bans
     {
       get { return _bans; }
     }
@@ -1534,11 +1534,11 @@ namespace MumbleProto
     private void Resetreason() { reasonSpecified = false; }
     
 
-    private MumbleProto.PermissionDenied.DenyType? _type;
+    private PermissionDenied.DenyType? _type;
     [global::ProtoBuf.ProtoMember(5, IsRequired = false, Name=@"type", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
-    public MumbleProto.PermissionDenied.DenyType type
+    public PermissionDenied.DenyType type
     {
-      get { return _type?? MumbleProto.PermissionDenied.DenyType.Text; }
+      get { return _type?? PermissionDenied.DenyType.Text; }
       set { _type = value; }
     }
     [global::System.Xml.Serialization.XmlIgnore]
@@ -1546,7 +1546,7 @@ namespace MumbleProto
     public bool typeSpecified
     {
       get { return _type != null; }
-      set { if (value == (_type== null)) _type = value ? type : (MumbleProto.PermissionDenied.DenyType?)null; }
+      set { if (value == (_type== null)) _type = value ? type : (PermissionDenied.DenyType?)null; }
     }
     private bool ShouldSerializetype() { return typeSpecified; }
     private void Resettype() { typeSpecified = false; }
@@ -1639,16 +1639,16 @@ namespace MumbleProto
     private bool ShouldSerializeinherit_acls() { return inherit_aclsSpecified; }
     private void Resetinherit_acls() { inherit_aclsSpecified = false; }
     
-    private readonly global::System.Collections.Generic.List<MumbleProto.ACL.ChanGroup> _groups = new global::System.Collections.Generic.List<MumbleProto.ACL.ChanGroup>();
+    private readonly global::System.Collections.Generic.List<ChanGroup> _groups = new global::System.Collections.Generic.List<ChanGroup>();
     [global::ProtoBuf.ProtoMember(3, Name=@"groups", DataFormat = global::ProtoBuf.DataFormat.Default)]
-    public global::System.Collections.Generic.List<MumbleProto.ACL.ChanGroup> groups
+    public global::System.Collections.Generic.List<ChanGroup> groups
     {
       get { return _groups; }
     }
   
-    private readonly global::System.Collections.Generic.List<MumbleProto.ACL.ChanACL> _acls = new global::System.Collections.Generic.List<MumbleProto.ACL.ChanACL>();
+    private readonly global::System.Collections.Generic.List<ChanACL> _acls = new global::System.Collections.Generic.List<ChanACL>();
     [global::ProtoBuf.ProtoMember(4, Name=@"acls", DataFormat = global::ProtoBuf.DataFormat.Default)]
-    public global::System.Collections.Generic.List<MumbleProto.ACL.ChanACL> acls
+    public global::System.Collections.Generic.List<ChanACL> acls
     {
       get { return _acls; }
     }
@@ -2041,11 +2041,11 @@ namespace MumbleProto
     private void Resetcontext() { contextSpecified = false; }
     
 
-    private MumbleProto.ContextActionModify.Operation? _operation;
+    private ContextActionModify.Operation? _operation;
     [global::ProtoBuf.ProtoMember(4, IsRequired = false, Name=@"operation", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
-    public MumbleProto.ContextActionModify.Operation operation
+    public ContextActionModify.Operation operation
     {
-      get { return _operation?? MumbleProto.ContextActionModify.Operation.Add; }
+      get { return _operation?? ContextActionModify.Operation.Add; }
       set { _operation = value; }
     }
     [global::System.Xml.Serialization.XmlIgnore]
@@ -2053,7 +2053,7 @@ namespace MumbleProto
     public bool operationSpecified
     {
       get { return _operation != null; }
-      set { if (value == (_operation== null)) _operation = value ? operation : (MumbleProto.ContextActionModify.Operation?)null; }
+      set { if (value == (_operation== null)) _operation = value ? operation : (ContextActionModify.Operation?)null; }
     }
     private bool ShouldSerializeoperation() { return operationSpecified; }
     private void Resetoperation() { operationSpecified = false; }
@@ -2146,9 +2146,9 @@ namespace MumbleProto
   {
     public UserList() {}
     
-    private readonly global::System.Collections.Generic.List<MumbleProto.UserList.User> _users = new global::System.Collections.Generic.List<MumbleProto.UserList.User>();
+    private readonly global::System.Collections.Generic.List<User> _users = new global::System.Collections.Generic.List<User>();
     [global::ProtoBuf.ProtoMember(1, Name=@"users", DataFormat = global::ProtoBuf.DataFormat.Default)]
-    public global::System.Collections.Generic.List<MumbleProto.UserList.User> users
+    public global::System.Collections.Generic.List<User> users
     {
       get { return _users; }
     }
@@ -2216,9 +2216,9 @@ namespace MumbleProto
     private bool ShouldSerializeid() { return idSpecified; }
     private void Resetid() { idSpecified = false; }
     
-    private readonly global::System.Collections.Generic.List<MumbleProto.VoiceTarget.Target> _targets = new global::System.Collections.Generic.List<MumbleProto.VoiceTarget.Target>();
+    private readonly global::System.Collections.Generic.List<Target> _targets = new global::System.Collections.Generic.List<Target>();
     [global::ProtoBuf.ProtoMember(2, Name=@"targets", DataFormat = global::ProtoBuf.DataFormat.Default)]
-    public global::System.Collections.Generic.List<MumbleProto.VoiceTarget.Target> targets
+    public global::System.Collections.Generic.List<Target> targets
     {
       get { return _targets; }
     }
@@ -2479,19 +2479,19 @@ namespace MumbleProto
     }
   
 
-    private MumbleProto.UserStats.Stats _from_client = null;
+    private UserStats.Stats _from_client = null;
     [global::ProtoBuf.ProtoMember(4, IsRequired = false, Name=@"from_client", DataFormat = global::ProtoBuf.DataFormat.Default)]
     [global::System.ComponentModel.DefaultValue(null)]
-    public MumbleProto.UserStats.Stats from_client
+    public UserStats.Stats from_client
     {
       get { return _from_client; }
       set { _from_client = value; }
     }
 
-    private MumbleProto.UserStats.Stats _from_server = null;
+    private UserStats.Stats _from_server = null;
     [global::ProtoBuf.ProtoMember(5, IsRequired = false, Name=@"from_server", DataFormat = global::ProtoBuf.DataFormat.Default)]
     [global::System.ComponentModel.DefaultValue(null)]
-    public MumbleProto.UserStats.Stats from_server
+    public UserStats.Stats from_server
     {
       get { return _from_server; }
       set { _from_server = value; }
@@ -2605,10 +2605,10 @@ namespace MumbleProto
     private void Resettcp_ping_var() { tcp_ping_varSpecified = false; }
     
 
-    private MumbleProto.Version _version = null;
+    private Version _version = null;
     [global::ProtoBuf.ProtoMember(12, IsRequired = false, Name=@"version", DataFormat = global::ProtoBuf.DataFormat.Default)]
     [global::System.ComponentModel.DefaultValue(null)]
-    public MumbleProto.Version version
+    public Version version
     {
       get { return _version; }
       set { _version = value; }

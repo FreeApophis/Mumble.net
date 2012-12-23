@@ -1,7 +1,7 @@
 ﻿using System;
 using ProtoBuf;
 
-namespace Protocols.Mumble
+namespace Protocol.Mumble
 {
     public class MumblePacketEventArgs : EventArgs
     {

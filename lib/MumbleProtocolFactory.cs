@@ -4,43 +4,43 @@ using System.IO;
 using System.Linq;
 using ProtoBuf;
 
-namespace Protocols.Mumble
+namespace Protocol.Mumble
 {
     class MumbleProtocolFactory
     {
-        private static readonly Dictionary<MessageTypes, Type> Types = new Dictionary<MessageTypes, Type> 
+        private static Dictionary<MessageTypes, Type> types = new Dictionary<MessageTypes, Type> 
         {
-            { MessageTypes.Version, typeof(MumbleProto.Version) },
-            { MessageTypes.UDPTunnel, typeof(MumbleProto.UDPTunnel) },
-            { MessageTypes.Authenticate, typeof(MumbleProto.Authenticate) },
-            { MessageTypes.Ping, typeof(MumbleProto.Ping) },
-            { MessageTypes.Reject, typeof(MumbleProto.Reject) },
-            { MessageTypes.ServerSync, typeof(MumbleProto.ServerSync) },
-            { MessageTypes.ChannelRemove, typeof(MumbleProto.ChannelRemove) },
-            { MessageTypes.ChannelState, typeof(MumbleProto.ChannelState) },
-            { MessageTypes.UserRemove, typeof(MumbleProto.UserRemove) },
-            { MessageTypes.UserState, typeof(MumbleProto.UserState) },
-            { MessageTypes.BanList, typeof(MumbleProto.BanList) },
-            { MessageTypes.TextMessage, typeof(MumbleProto.TextMessage) },
-            { MessageTypes.PermissionDenied, typeof(MumbleProto.PermissionDenied) },
-            { MessageTypes.ACL, typeof(MumbleProto.ACL) },
-            { MessageTypes.QueryUsers, typeof(MumbleProto.QueryUsers) },
-            { MessageTypes.CryptSetup, typeof(MumbleProto.CryptSetup) },
-            { MessageTypes.ContextActionModify, typeof(MumbleProto.ContextActionModify) },
-            { MessageTypes.ContextAction, typeof(MumbleProto.ContextAction) },
-            { MessageTypes.UserList, typeof(MumbleProto.UserList) },
-            { MessageTypes.VoiceTarget, typeof(MumbleProto.VoiceTarget) },
-            { MessageTypes.PermissionQuery, typeof(MumbleProto.PermissionQuery) },
-            { MessageTypes.CodecVersion, typeof(MumbleProto.CodecVersion) },
-            { MessageTypes.UserStats, typeof(MumbleProto.UserStats) },
-            { MessageTypes.RequestBlob, typeof(MumbleProto.RequestBlob) },
-            { MessageTypes.ServerConfig, typeof(MumbleProto.ServerConfig) },
-            { MessageTypes.SuggestConfig, typeof(MumbleProto.SuggestConfig) },
+            { MessageTypes.Version, typeof(Version) },
+            { MessageTypes.UDPTunnel, typeof(UDPTunnel) },
+            { MessageTypes.Authenticate, typeof(Authenticate) },
+            { MessageTypes.Ping, typeof(Ping) },
+            { MessageTypes.Reject, typeof(Reject) },
+            { MessageTypes.ServerSync, typeof(ServerSync) },
+            { MessageTypes.ChannelRemove, typeof(ChannelRemove) },
+            { MessageTypes.ChannelState, typeof(ChannelState) },
+            { MessageTypes.UserRemove, typeof(UserRemove) },
+            { MessageTypes.UserState, typeof(UserState) },
+            { MessageTypes.BanList, typeof(BanList) },
+            { MessageTypes.TextMessage, typeof(TextMessage) },
+            { MessageTypes.PermissionDenied, typeof(PermissionDenied) },
+            { MessageTypes.ACL, typeof(ACL) },
+            { MessageTypes.QueryUsers, typeof(QueryUsers) },
+            { MessageTypes.CryptSetup, typeof(CryptSetup) },
+            { MessageTypes.ContextActionModify, typeof(ContextActionModify) },
+            { MessageTypes.ContextAction, typeof(ContextAction) },
+            { MessageTypes.UserList, typeof(UserList) },
+            { MessageTypes.VoiceTarget, typeof(VoiceTarget) },
+            { MessageTypes.PermissionQuery, typeof(PermissionQuery) },
+            { MessageTypes.CodecVersion, typeof(CodecVersion) },
+            { MessageTypes.UserStats, typeof(UserStats) },
+            { MessageTypes.RequestBlob, typeof(RequestBlob) },
+            { MessageTypes.ServerConfig, typeof(ServerConfig) },
+            { MessageTypes.SuggestConfig, typeof(SuggestConfig) },
         };
 
         public static IExtensible Create(MessageTypes type)
         {
-            var product = Types[type];
+            var product = types[type];
 
             return (IExtensible)Activator.CreateInstance(product);
         }
@@ -49,12 +49,12 @@ namespace Protocols.Mumble
         {
             var messageStream = new MemoryStream(stream.ReadBytes(size));
 
-            return (IExtensible)Serializer.NonGeneric.Deserialize(Types[type], messageStream);
+            return (IExtensible)Serializer.NonGeneric.Deserialize(types[type], messageStream);
         }
 
         public static MessageTypes MessageType(IExtensible mumbleProto)
         {
-            return Types.Where(kvp => kvp.Value == mumbleProto.GetType()).First().Key;
+            return types.Where(kvp => kvp.Value == mumbleProto.GetType()).First().Key;
         }
     }
 }

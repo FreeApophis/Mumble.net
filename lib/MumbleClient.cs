@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using MumbleProto;
+using System.Linq;
 
-namespace Protocols.Mumble
+namespace Protocol.Mumble
 {
     public class MumbleClient : MumbleConnection
     {
@@ -18,7 +19,7 @@ namespace Protocols.Mumble
 
         public MumbleChannel RootChannel { get; internal set; }
 
-        private readonly Dictionary<UInt32, MumbleUser> users = new Dictionary<UInt32, MumbleUser>();
+        private Dictionary<UInt32, MumbleUser> users = new Dictionary<UInt32, MumbleUser>();
 
         public Dictionary<UInt32, MumbleUser> Users
         {
@@ -28,11 +29,11 @@ namespace Protocols.Mumble
             }
         }
 
-        public MumbleUser User { get; private set; }
+        public MumbleUser ClientUser { get; private set; }
 
         public string Version { get; private set; }
 
-        public uint ServerVersion { get; private set; }
+        public uint serverVersion;
         public string ServerOS { get; private set; }
         public string ServerOSVersion { get; private set; }
         public string ServerRelease { get; set; }
@@ -40,11 +41,15 @@ namespace Protocols.Mumble
         public string WelcomeText { get; private set; }
         public uint MaxBandwith { get; private set; }
 
+        public event EventHandler<MumblePacketEventArgs> OnConnected;
+        public event EventHandler<MumblePacketEventArgs> OnTextMessage;
 
-        public MumbleClient(string version)
+
+        public MumbleClient(string version, string host, string username, int port = 64738) :
+            base(host, username, port)
         {
             Version = version;
-            PacketReceivedEvent += ProtocolHandler;
+            OnPacketReceived += ProtocolHandler;
         }
 
         public new void Connect()
@@ -59,22 +64,61 @@ namespace Protocols.Mumble
         {
             var proto = args.Message as IProtocolHandler;
 
-            if (proto != null) { proto.HandleMessage(this); }
+            proto.HandleMessage(this);
         }
 
-        public void Update(MumbleProto.Version message)
+        public void Update(Version message)
         {
             ServerOS = message.os;
             ServerOSVersion = message.os;
             ServerRelease = message.release;
-            ServerVersion = message.version;
+            serverVersion = message.version;
         }
 
         public void Update(ServerSync message)
         {
-            if (message.sessionSpecified) { User = users[message.session]; }
+            if (message.sessionSpecified) { ClientUser = users[message.session]; }
             if (message.max_bandwidthSpecified) { MaxBandwith = message.max_bandwidth; }
             if (message.welcome_textSpecified) { WelcomeText = message.welcome_text; }
+
+            DispatchEvent(this, OnConnected, new MumblePacketEventArgs(message));
+        }
+
+        public void Update(TextMessage message)
+        {
+            DispatchEvent(this, OnTextMessage, new MumblePacketEventArgs(message));
+        }
+
+        public void SendTextMessageToUser(string message, MumbleUser user)
+        {
+            SendTextMessage(message, null, null, Enumerable.Repeat(user, 1));
+        }
+
+        public void SendTextMessageToChannel(string message, MumbleChannel channel, bool recursive)
+        {
+            if (recursive)
+            {
+                SendTextMessage(message, null, Enumerable.Repeat(channel, 1), null);
+            }
+            else
+            {
+                SendTextMessage(message, Enumerable.Repeat(channel, 1), null, null);
+            }
+        }
+
+        public void SwitchChannel(MumbleChannel channel)
+        {
+            SendUserState(channel);
+        }
+
+        public MumbleChannel FindChannel(string name)
+        {
+            return channels.Values.Where(channel => channel.Name == name).FirstOrDefault();
+        }
+
+        public MumbleUser FindUser(uint id)
+        {
+            return users.ContainsKey(id) ? users[id] : null;
         }
 
         private UInt64 sequence = 1;
@@ -83,5 +127,6 @@ namespace Protocols.Mumble
         {
             return sequence += 2;
         }
+
     }
 }

@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Linq;
-using System.Reflection;
-using Protocols.Mumble;
 
-namespace MumbleProto
+namespace Protocol.Mumble
 {
 
     public interface IProtocolHandler
@@ -24,13 +22,13 @@ namespace MumbleProto
             {
                 if (!property.IsDefined(typeof(ProtoBuf.ProtoMemberAttribute), false)) { continue; }
 
-                PropertyInfo prop = property;
-                var specified = properties.Where(p => p.Name == prop.Name + "Specified").FirstOrDefault();
+                var specified = properties.Where(p => p.Name == property.Name + "Specified").FirstOrDefault();
                 bool? hasField = null;
                 if (specified != null)
                 {
                     hasField = specified.GetValue(message, null) as bool?;
                 }
+
                 result += " " + property.Name + ": " + FormatValue(hasField, property.GetValue(message, null)) + Environment.NewLine;
             }
 
@@ -83,7 +81,7 @@ namespace MumbleProto
             audioOut.EncodeVarint(sequence + 5000);
             audioOut.Payload = audioIn.Payload;
 
-            client.SendUDPTunnel(audioOut.Packet);
+            //client.SendUDPTunnel(audioOut.Packet);
         }
     }
 
@@ -180,7 +178,7 @@ namespace MumbleProto
     {
         public void HandleMessage(MumbleClient client)
         {
-
+            client.Update(this);
         }
     }
 

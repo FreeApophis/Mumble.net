@@ -1,28 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using MumbleProto;
 
-namespace Protocols.Mumble
+namespace Protocol.Mumble
 {
 
     public class MumbleChannel
     {
-        public string Name { get; private set; }
-        private byte[] descriptionHash;
-        public string Description { get; private set; }
-        public uint ID { get; private set; }
-        public bool Temporary { get; set; }
-        public int Position { get; set; }
-
-        public bool IsRoot { get { return this == parentChannel; } }
-
         private MumbleClient client;
 
         private MumbleChannel parentChannel;
 
-        private readonly List<MumbleChannel> subChannels = new List<MumbleChannel>();
+        private List<MumbleChannel> subChannels = new List<MumbleChannel>();
         public ReadOnlyCollection<MumbleChannel> SubChannels
         {
             get
@@ -31,15 +20,7 @@ namespace Protocols.Mumble
             }
         }
 
-        public IEnumerable<MumbleChannel> OrderedSubchannels
-        {
-            get
-            {
-                return subChannels.OrderBy(ch => ch.Position);
-            }
-        }
-
-        private readonly List<MumbleUser> users = new List<MumbleUser>();
+        private List<MumbleUser> users = new List<MumbleUser>();
         public ReadOnlyCollection<MumbleUser> Users
         {
             get
@@ -47,6 +28,9 @@ namespace Protocols.Mumble
                 return new ReadOnlyCollection<MumbleUser>(users);
             }
         }
+
+        public string Name { get; private set; }
+        public uint ID { get; private set; }
 
         public MumbleChannel(MumbleClient client, ChannelState message)
         {
@@ -58,7 +42,7 @@ namespace Protocols.Mumble
             client.Channels.Add(ID, this);
             client.Channels.TryGetValue(message.parent, out parentChannel);
 
-            if (IsRoot)
+            if (IsRoot())
             {
                 client.RootChannel = this;
             }
@@ -68,26 +52,15 @@ namespace Protocols.Mumble
             }
         }
 
-
-
-        internal void Update(ChannelState message)
+        public bool IsRoot()
         {
-            if (message.temporarySpecified) { Temporary = message.temporary; }
-            if (message.positionSpecified) { Position = message.position; }
-
-            if (message.description_hashSpecified && descriptionHash != message.description_hash)
-            {
-                descriptionHash = message.description_hash;
-
-                client.SendRequestBlob(Enumerable.Empty<UInt32>(), Enumerable.Empty<UInt32>(), Enumerable.Repeat(ID, 1));
-            }
-            if (message.descriptionSpecified) { Description = message.description; }
+            return this == parentChannel;
         }
 
-        internal void Remove()
+
+        public void Update(ChannelState message)
         {
-            parentChannel.subChannels.Remove(this);
-            client.Channels.Remove(ID);
+
         }
 
         internal void AddLocalUser(MumbleUser user)
@@ -104,9 +77,17 @@ namespace Protocols.Mumble
         {
             string result = new String(' ', level) + "C " + Name + " (" + ID + ")" + Environment.NewLine;
 
-            result = subChannels.Aggregate(result, (current, channel) => current + channel.Tree(level + 1));
+            foreach (var channel in subChannels)
+            {
+                result += channel.Tree(level + 1);
+            }
 
-            return users.Aggregate(result, (current, user) => current + user.Tree(level + 1));
+            foreach (var user in users)
+            {
+                result += user.Tree(level + 1);
+            }
+
+            return result;
         }
     }
 }
