@@ -1,5 +1,5 @@
 ﻿using System;
-using Protocols.Mumble;
+using Protocol.Mumble;
 
 namespace Mumble.net.app
 {
@@ -7,7 +7,8 @@ namespace Mumble.net.app
     {
         static void Main(string[] args)
         {
-            var client = new MumbleClient("Mumble.net");
+            
+            var client = new MumbleClient("Mumble.net", "ciphershed.org", "Test");
 
             client.Connect();
 

@@ -12,44 +12,38 @@ namespace Protocol.Mumble
 
     public class AudioPacket
     {
-        private int index;
-        private byte[] packet;
-        private List<byte> encoderPacket;
+        private int _index;
+        private readonly byte[] _packet;
+        private readonly List<byte> _encoderPacket;
 
-        public byte[] Packet
-        {
-            get 
-            {
-                return decode ? packet : encoderPacket.ToArray();
-            }
-        }
+        public byte[] Packet => _decode ? _packet : _encoderPacket.ToArray();
 
         public byte[] Payload
         {
             get
             {
-                return packet.Skip(index).ToArray();
+                return _packet.Skip(_index).ToArray();
             }
 
             set
             {
-                encoderPacket.AddRange(value);
+                _encoderPacket.AddRange(value);
             }
         }
 
 
-        private bool decode;
+        private readonly bool _decode;
 
         public AudioPacket(byte[] packet)
         {
-            this.packet = packet;
-            decode = true;
+            _packet = packet;
+            _decode = true;
         }
 
         public AudioPacket()
         {
-            decode = false;
-            encoderPacket = new List<byte>();
+            _decode = false;
+            _encoderPacket = new List<byte>();
         }
 
         public TypeTarget DecodeTypeTarget()
@@ -64,7 +58,7 @@ namespace Protocol.Mumble
 
         public void EncodeTypeTarget(TypeTarget value)
         {
-            encoderPacket.Add((byte)(value.Target << 5 | value.Type));
+            _encoderPacket.Add((byte)(value.Target << 5 | value.Type));
         }
 
         public void EncodeVarint(UInt64 value)
@@ -76,66 +70,66 @@ namespace Protocol.Mumble
                 if (value <= 0x3)
                 {
                     // Shortcase for -1 to -4
-                    encoderPacket.Add((byte)(0xFC | value));
+                    _encoderPacket.Add((byte)(0xFC | value));
                     return;
                 }
-                encoderPacket.Add(0xF8);
+                _encoderPacket.Add(0xF8);
             }
             if (value < 0x80)
             {
                 // Need top bit clear
-                encoderPacket.Add((byte)value);
+                _encoderPacket.Add((byte)value);
             }
             if (value < 0x4000)
             {
                 // Need top two bits clear
-                encoderPacket.Add((byte)((value >> 8) | 0x80));
-                encoderPacket.Add((byte)(value & 0xFF));
+                _encoderPacket.Add((byte)((value >> 8) | 0x80));
+                _encoderPacket.Add((byte)(value & 0xFF));
             }
             else if (value < 0x200000)
             {
                 // Need top three bits clear
-                encoderPacket.Add((byte)((value >> 16) | 0xC0));
-                encoderPacket.Add((byte)((value >> 8) & 0xFF));
-                encoderPacket.Add((byte)(value & 0xFF));
+                _encoderPacket.Add((byte)((value >> 16) | 0xC0));
+                _encoderPacket.Add((byte)((value >> 8) & 0xFF));
+                _encoderPacket.Add((byte)(value & 0xFF));
             }
             else if (value < 0x10000000)
             {
                 // Need top four bits clear
-                encoderPacket.Add((byte)((value >> 24) | 0xE0));
-                encoderPacket.Add((byte)((value >> 16) & 0xFF));
-                encoderPacket.Add((byte)((value >> 8) & 0xFF));
-                encoderPacket.Add((byte)(value & 0xFF));
+                _encoderPacket.Add((byte)((value >> 24) | 0xE0));
+                _encoderPacket.Add((byte)((value >> 16) & 0xFF));
+                _encoderPacket.Add((byte)((value >> 8) & 0xFF));
+                _encoderPacket.Add((byte)(value & 0xFF));
             }
             else if (value < 0x100000000)
             {
                 // It's a full 32-bit integer.
-                encoderPacket.Add(0xF0);
-                encoderPacket.Add((byte)((value >> 24) & 0xFF));
-                encoderPacket.Add((byte)((value >> 16) & 0xFF));
-                encoderPacket.Add((byte)((value >> 8) & 0xFF));
-                encoderPacket.Add((byte)(value & 0xFF));
+                _encoderPacket.Add(0xF0);
+                _encoderPacket.Add((byte)((value >> 24) & 0xFF));
+                _encoderPacket.Add((byte)((value >> 16) & 0xFF));
+                _encoderPacket.Add((byte)((value >> 8) & 0xFF));
+                _encoderPacket.Add((byte)(value & 0xFF));
             }
             else
             {
                 // It's a 64-bit value.
-                encoderPacket.Add(0xF4);
-                encoderPacket.Add((byte)((value >> 56) & 0xFF));
-                encoderPacket.Add((byte)((value >> 48) & 0xFF));
-                encoderPacket.Add((byte)((value >> 40) & 0xFF));
-                encoderPacket.Add((byte)((value >> 32) & 0xFF));
-                encoderPacket.Add((byte)((value >> 24) & 0xFF));
-                encoderPacket.Add((byte)((value >> 16) & 0xFF));
-                encoderPacket.Add((byte)((value >> 8) & 0xFF));
-                encoderPacket.Add((byte)(value & 0xFF));
+                _encoderPacket.Add(0xF4);
+                _encoderPacket.Add((byte)((value >> 56) & 0xFF));
+                _encoderPacket.Add((byte)((value >> 48) & 0xFF));
+                _encoderPacket.Add((byte)((value >> 40) & 0xFF));
+                _encoderPacket.Add((byte)((value >> 32) & 0xFF));
+                _encoderPacket.Add((byte)((value >> 24) & 0xFF));
+                _encoderPacket.Add((byte)((value >> 16) & 0xFF));
+                _encoderPacket.Add((byte)((value >> 8) & 0xFF));
+                _encoderPacket.Add((byte)(value & 0xFF));
             }
         }
 
         private UInt64 Next()
         {
-            var result = packet[index];
+            var result = _packet[_index];
 
-            index++;
+            _index++;
 
             return result;
         }
@@ -165,7 +159,7 @@ namespace Protocol.Mumble
                         result = Next() << 56 | Next() << 48 | Next() << 40 | Next() << 32 | Next() << 24 | Next() << 16 | Next() << 8 | Next();
                         break;
                     case 0xF8:
-                        index++;
+                        _index++;
                         result = DecodeVarint();
                         result = ~result;
                         break;

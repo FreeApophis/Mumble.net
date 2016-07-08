@@ -1,46 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace Protocol.Mumble
 {
 
     public class MumbleChannel
     {
-        private MumbleClient client;
+        private MumbleClient _client;
 
-        private MumbleChannel parentChannel;
+        private readonly MumbleChannel _parentChannel;
 
-        private List<MumbleChannel> subChannels = new List<MumbleChannel>();
-        public ReadOnlyCollection<MumbleChannel> SubChannels
-        {
-            get
-            {
-                return new ReadOnlyCollection<MumbleChannel>(subChannels);
-            }
-        }
+        private readonly List<MumbleChannel> _subChannels = new List<MumbleChannel>();
+        public ReadOnlyCollection<MumbleChannel> SubChannels => new ReadOnlyCollection<MumbleChannel>(_subChannels);
 
-        private List<MumbleUser> users = new List<MumbleUser>();
-        public ReadOnlyCollection<MumbleUser> Users
-        {
-            get
-            {
-                return new ReadOnlyCollection<MumbleUser>(users);
-            }
-        }
+        private readonly List<MumbleUser> _users = new List<MumbleUser>();
+        public ReadOnlyCollection<MumbleUser> Users => new ReadOnlyCollection<MumbleUser>(_users);
 
-        public string Name { get; private set; }
-        public uint ID { get; private set; }
+        public string Name { get; }
+        public uint ID { get; }
 
         public MumbleChannel(MumbleClient client, ChannelState message)
         {
-            this.client = client;
+            _client = client;
 
             ID = message.channel_id;
             Name = message.name;
 
             client.Channels.Add(ID, this);
-            client.Channels.TryGetValue(message.parent, out parentChannel);
+            client.Channels.TryGetValue(message.parent, out _parentChannel);
 
             if (IsRoot())
             {
@@ -48,13 +37,13 @@ namespace Protocol.Mumble
             }
             else
             {
-                parentChannel.subChannels.Add(this);
+                _parentChannel?._subChannels.Add(this);
             }
         }
 
         public bool IsRoot()
         {
-            return this == parentChannel;
+            return this == _parentChannel;
         }
 
 
@@ -65,29 +54,21 @@ namespace Protocol.Mumble
 
         internal void AddLocalUser(MumbleUser user)
         {
-            users.Add(user);
+            _users.Add(user);
         }
 
         internal void RemoveLocalUser(MumbleUser user)
         {
-            users.Remove(user);
+            _users.Remove(user);
         }
 
         public string Tree(int level = 0)
         {
-            string result = new String(' ', level) + "C " + Name + " (" + ID + ")" + Environment.NewLine;
+            string result = $"{new String(' ', level)}C {Name} ({ID}){Environment.NewLine}";
 
-            foreach (var channel in subChannels)
-            {
-                result += channel.Tree(level + 1);
-            }
+            result = _subChannels.Aggregate(result, (current, channel) => current + channel.Tree(level + 1));
 
-            foreach (var user in users)
-            {
-                result += user.Tree(level + 1);
-            }
-
-            return result;
+            return _users.Aggregate(result, (current, user) => current + user.Tree(level + 1));
         }
     }
 }

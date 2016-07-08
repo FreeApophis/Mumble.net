@@ -11,20 +11,20 @@ using ProtoBuf;
 
 namespace Protocol.Mumble
 {
-    public class MumbleConnection
+    public class MumbleConnection : IDisposable
     {
-        private int port;
-        private string host;
-        private bool connected;
+        private readonly int _port;
+        private readonly string _host;
+        private bool _connected;
 
-        private uint mumbleVersion;
-        private string username;
+        private readonly uint _mumbleVersion;
+        private readonly string _username;
 
-        private TcpClient tcpClient;
-        private SslStream sslStream;
+        private TcpClient _tcpClient;
+        private SslStream _sslStream;
 
-        private Thread listenThread;
-        private Thread pingerThread;
+        private Thread _listenThread;
+        private Thread _pingerThread;
 
         #region Public events
 
@@ -32,9 +32,7 @@ namespace Protocol.Mumble
 
         protected void DispatchEvent<T>(object sender, EventHandler<T> handler, T eventArgs) where T : EventArgs
         {
-            if (handler == null) return;
-
-            handler.Invoke(sender, eventArgs);
+            handler?.Invoke(sender, eventArgs);
         }
 
         #endregion
@@ -43,13 +41,13 @@ namespace Protocol.Mumble
 
         public MumbleConnection(string host, string username, int port = 64738)
         {
-            this.host = host;
-            this.port = port;
-            this.username = username;
+            _host = host;
+            _port = port;
+            _username = username;
 
-            connected = false;
+            _connected = false;
 
-            mumbleVersion = (1 << 16) + (2 << 8) + 3;
+            _mumbleVersion = (1 << 16) + (2 << 8) + 3;
         }
 
         #endregion
@@ -58,39 +56,39 @@ namespace Protocol.Mumble
 
         public void Connect()
         {
-            tcpClient = new TcpClient(host, port);
+            _tcpClient = new TcpClient(_host, _port);
 
-            sslStream = new SslStream(tcpClient.GetStream(), false, ValidateServerCertificate, null);
+            _sslStream = new SslStream(_tcpClient.GetStream(), false, ValidateServerCertificate, null);
 
-            sslStream.AuthenticateAsClient(host);
+            _sslStream.AuthenticateAsClient(_host);
 
-            connected = true;
+            _connected = true;
 
 #if DEBUG
             OnPacketReceived += PacketReceivedHandler;
 #endif
 
-            listenThread = new Thread(Listen);
-            listenThread.Start();
+            _listenThread = new Thread(Listen);
+            _listenThread.Start();
 
-            pingerThread = new Thread(Pinger);
-            pingerThread.Start();
+            _pingerThread = new Thread(Pinger);
+            _pingerThread.Start();
         }
 
         public void Disconnect()
         {
-            connected = false;
+            _connected = false;
 
 #if DEBUG
             OnPacketReceived -= PacketReceivedHandler;
 #endif
             try
             {
-                sslStream.Close();
+                _sslStream.Close();
             }
             catch (Exception)
             {
-                tcpClient.Close();
+                _tcpClient.Close();
             }
         }
 
@@ -100,12 +98,14 @@ namespace Protocol.Mumble
 
         public void SendVersion(string clientVersion)
         {
-            var message = new Version();
+            var message = new Version
+            {
+                release = clientVersion,
+                version = _mumbleVersion,
+                os = Environment.OSVersion.Platform.ToString(),
+                os_version = Environment.OSVersion.VersionString
+            };
 
-            message.release = clientVersion;
-            message.version = mumbleVersion;
-            message.os = Environment.OSVersion.Platform.ToString();
-            message.os_version = Environment.OSVersion.VersionString;
 
             MumbleWrite(message);
         }
@@ -113,9 +113,8 @@ namespace Protocol.Mumble
 
         public void SendAuthenticate()
         {
-            var message = new Authenticate();
+            var message = new Authenticate { username = _username };
 
-            message.username = username;
             message.celt_versions.Add(-2147483637);
 
             MumbleWrite(message);
@@ -123,9 +122,8 @@ namespace Protocol.Mumble
 
         public void SendUDPTunnel(byte[] packet)
         {
-            var message = new UDPTunnel();
+            var message = new UDPTunnel {packet = packet};
 
-            message.packet = packet;
 
             MumbleWrite(message);
         }
@@ -308,7 +306,7 @@ namespace Protocol.Mumble
 
         private void Listen()
         {
-            while (connected)
+            while (_connected)
             {
                 var message = MumbleRead();
                 if (message == null)
@@ -317,12 +315,9 @@ namespace Protocol.Mumble
                 }
 
                 var temp = OnPacketReceived;
-                if (temp != null)
-                {
-                    temp(this, new MumblePacketEventArgs(message));
-                }
+                temp?.Invoke(this, new MumblePacketEventArgs(message));
             }
-            connected = false;
+            _connected = false;
         }
 
         private void PacketReceivedHandler(object sender, MumblePacketEventArgs args)
@@ -335,7 +330,7 @@ namespace Protocol.Mumble
 
         private void Pinger()
         {
-            while (connected)
+            while (_connected)
             {
                 Thread.Sleep(10000);
                 SendPing();
@@ -344,15 +339,16 @@ namespace Protocol.Mumble
 
         private void MumbleWrite(IExtensible message)
         {
-            if (!connected) { return; }
+            if (!_connected) { return; }
 
-            var sslStreamWriter = new BinaryWriter(sslStream);
-            if (message is UDPTunnel)
+            var sslStreamWriter = new BinaryWriter(_sslStream);
+            var tunnel = message as UDPTunnel;
+            if (tunnel != null)
             {
-                var audioMessage = message as UDPTunnel;
+                var audioMessage = tunnel;
 
-                Int16 messageType = (Int16)MumbleProtocolFactory.MessageType(message);
-                Int32 messageSize = (Int32)audioMessage.packet.Length;
+                Int16 messageType = (Int16)MumbleProtocolFactory.MessageType(tunnel);
+                Int32 messageSize = audioMessage.packet.Length;
 
                 sslStreamWriter.Write(IPAddress.HostToNetworkOrder(messageType));
                 sslStreamWriter.Write(IPAddress.HostToNetworkOrder(messageSize));
@@ -376,7 +372,7 @@ namespace Protocol.Mumble
 
         private IExtensible MumbleRead()
         {
-            var sslStreamReader = new BinaryReader(sslStream);
+            var sslStreamReader = new BinaryReader(_sslStream);
 
             IExtensible result;
             try
@@ -394,7 +390,7 @@ namespace Protocol.Mumble
                 }
 
             }
-            catch (IOException exception)
+            catch (IOException)
             {
                 result = null;
             }
@@ -402,5 +398,10 @@ namespace Protocol.Mumble
         }
 
         #endregion
+
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -4,11 +4,11 @@ namespace Protocol.Mumble
 {
     public class MumbleUser
     {
-        private readonly MumbleClient client;
+        private readonly MumbleClient _client;
 
         public MumbleChannel Channel { get; private set; }
-        public string Name { get; private set; }
-        public uint Session { get; private set; }
+        public string Name { get; }
+        public uint Session { get; }
         public bool Deaf { get; private set; }
         public bool DeafSelf { get; private set; }
         public bool Mute { get; private set; }
@@ -16,7 +16,7 @@ namespace Protocol.Mumble
 
         public MumbleUser(MumbleClient client, UserState message)
         {
-            this.client = client;
+            _client = client;
             Name = message.name;
             Session = message.session;
 
@@ -32,7 +32,7 @@ namespace Protocol.Mumble
             if (message.channel_idSpecified && message.channel_id != Channel.ID)
             {
                 Channel.RemoveLocalUser(this);
-                Channel = client.Channels[message.channel_id];
+                Channel = _client.Channels[message.channel_id];
                 Channel.AddLocalUser(this);
             }
 
@@ -44,13 +44,13 @@ namespace Protocol.Mumble
 
         public void Update(UserRemove message)
         {
-            client.Channels.Remove(Session);
+            _client.Channels.Remove(Session);
             Channel.RemoveLocalUser(this);
         }
 
         public string Tree(int level)
         {
-            return new String(' ', level) + "U " + Name + " (" + Session + ")" + Environment.NewLine;
+            return $"{new String(' ', level)}U {Name} ({Session}){Environment.NewLine}";
         }
 
     }

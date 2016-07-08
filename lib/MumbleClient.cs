@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,33 +6,19 @@ namespace Protocol.Mumble
 {
     public class MumbleClient : MumbleConnection
     {
-        private readonly Dictionary<UInt32, MumbleChannel> channels = new Dictionary<UInt32, MumbleChannel>();
+        private readonly Dictionary<UInt32, MumbleChannel> _channels = new Dictionary<UInt32, MumbleChannel>();
 
-        public Dictionary<UInt32, MumbleChannel> Channels
-        {
-            get
-            {
-                return channels;
-            }
-        }
+        public Dictionary<UInt32, MumbleChannel> Channels => _channels;
 
         public MumbleChannel RootChannel { get; internal set; }
 
-        private Dictionary<UInt32, MumbleUser> users = new Dictionary<UInt32, MumbleUser>();
-
-        public Dictionary<UInt32, MumbleUser> Users
-        {
-            get
-            {
-                return users;
-            }
-        }
+        public Dictionary<UInt32, MumbleUser> Users { get; } = new Dictionary<UInt32, MumbleUser>();
 
         public MumbleUser ClientUser { get; private set; }
 
-        public string Version { get; private set; }
+        public string Version { get; }
 
-        public uint serverVersion;
+        public uint ServerVersion;
         public string ServerOS { get; private set; }
         public string ServerOSVersion { get; private set; }
         public string ServerRelease { get; set; }
@@ -64,7 +49,7 @@ namespace Protocol.Mumble
         {
             var proto = args.Message as IProtocolHandler;
 
-            proto.HandleMessage(this);
+            proto?.HandleMessage(this);
         }
 
         public void Update(Version message)
@@ -72,12 +57,12 @@ namespace Protocol.Mumble
             ServerOS = message.os;
             ServerOSVersion = message.os;
             ServerRelease = message.release;
-            serverVersion = message.version;
+            ServerVersion = message.version;
         }
 
         public void Update(ServerSync message)
         {
-            if (message.sessionSpecified) { ClientUser = users[message.session]; }
+            if (message.sessionSpecified) { ClientUser = Users[message.session]; }
             if (message.max_bandwidthSpecified) { MaxBandwith = message.max_bandwidth; }
             if (message.welcome_textSpecified) { WelcomeText = message.welcome_text; }
 
@@ -113,19 +98,19 @@ namespace Protocol.Mumble
 
         public MumbleChannel FindChannel(string name)
         {
-            return channels.Values.Where(channel => channel.Name == name).FirstOrDefault();
+            return _channels.Values.FirstOrDefault(channel => channel.Name == name);
         }
 
         public MumbleUser FindUser(uint id)
         {
-            return users.ContainsKey(id) ? users[id] : null;
+            return Users.ContainsKey(id) ? Users[id] : null;
         }
 
-        private UInt64 sequence = 1;
+        private UInt64 _sequence = 1;
 
         internal UInt64 NextSequence()
         {
-            return sequence += 2;
+            return _sequence += 2;
         }
 
     }
