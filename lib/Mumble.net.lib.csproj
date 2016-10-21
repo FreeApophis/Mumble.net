@@ -49,6 +49,7 @@
   <ItemGroup>
     <Compile Include="Coding.cs" />
     <Compile Include="MumbleChannel.cs" />
+    <Compile Include="Permission.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MessageTypes.cs" />
     <Compile Include="Mumble.cs">

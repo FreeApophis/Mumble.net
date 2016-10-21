@@ -44,24 +44,24 @@ namespace Protocols.Mumble
 
         Permission(uint permission)
         {
-            CanWritePermissions = ((permission & 0x1) > 0) ? true : false;
-            CanTraverse = ((permission & 0x2) > 0) ? true : false;
-            CanEnter = ((permission & 0x4) > 0) ? true : false;
-            CanSpeak = ((permission & 0x8) > 0) ? true : false;
-            CanMuteDeafen = ((permission & 0x10) > 0) ? true : false;
-            CanMove = ((permission & 0x20) > 0) ? true : false;
-            CanMakeChannel = ((permission & 0x40) > 0) ? true : false;
-            CanLinkChannel = ((permission & 0x80) > 0) ? true : false;
-            CanWhisper = ((permission & 0x100) > 0) ? true : false;
-            CanTextMessage = ((permission & 0x200) > 0) ? true : false;
-            CanMakeTempChannel = ((permission & 0x400) > 0) ? true : false;
+            CanWritePermissions = (permission & 0x1) > 0;
+            CanTraverse = (permission & 0x2) > 0;
+            CanEnter = (permission & 0x4) > 0;
+            CanSpeak = (permission & 0x8) > 0;
+            CanMuteDeafen = (permission & 0x10) > 0;
+            CanMove = (permission & 0x20) > 0;
+            CanMakeChannel = (permission & 0x40) > 0;
+            CanLinkChannel = (permission & 0x80) > 0;
+            CanWhisper = (permission & 0x100) > 0;
+            CanTextMessage = (permission & 0x200) > 0;
+            CanMakeTempChannel = (permission & 0x400) > 0;
 
-            CanKick = ((permission & 0x10000) > 0) ? true : false;
-            CanBan = ((permission & 0x20000) > 0) ? true : false;
-            CanRegister = ((permission & 0x40000) > 0) ? true : false;
-            CanRegisterSelf = ((permission & 0x80000) > 0) ? true : false;
+            CanKick = (permission & 0x10000) > 0;
+            CanBan = (permission & 0x20000) > 0;
+            CanRegister = (permission & 0x40000) > 0;
+            CanRegisterSelf = (permission & 0x80000) > 0;
 
-            Cached = ((permission & 0x8000000) > 0) ? true : false;
+            Cached = (permission & 0x8000000) > 0;
         }
 
         public uint ToInt()
