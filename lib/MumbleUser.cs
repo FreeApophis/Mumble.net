@@ -50,7 +50,7 @@ namespace Protocol.Mumble
 
         public string Tree(int level)
         {
-            return $"{new String(' ', level)}U {Name} ({Session}){Environment.NewLine}";
+            return $"{new string(' ', level)}U {Name} ({Session}){Environment.NewLine}";
         }
 
     }

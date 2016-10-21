@@ -401,7 +401,7 @@ namespace Protocol.Mumble
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            _sslStream.Dispose();
         }
     }
 }
