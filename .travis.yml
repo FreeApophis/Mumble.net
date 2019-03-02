@@ -1,2 +1,7 @@
 language: csharp
 solution: Mumble.net.sln
+mono: none
+dotnet: 2.1.502
+script:
+ - dotnet restore
+ - dotnet build
