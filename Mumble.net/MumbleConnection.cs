@@ -35,7 +35,7 @@ namespace Protocol.Mumble
             handler?.Invoke(sender, eventArgs);
         }
 
-        #endregion
+        #endregion Public events
 
         #region Constructors
 
@@ -50,7 +50,7 @@ namespace Protocol.Mumble
             _mumbleVersion = (1 << 16) + (2 << 8) + 3;
         }
 
-        #endregion
+        #endregion Constructors
 
         #region Public Methods
 
@@ -92,7 +92,7 @@ namespace Protocol.Mumble
             }
         }
 
-        #endregion
+        #endregion Public Methods
 
         #region Public Send Methods
 
@@ -120,9 +120,9 @@ namespace Protocol.Mumble
             MumbleWrite(message);
         }
 
-        public void SendUDPTunnel(byte[] packet)
+        public void SendUdpTunnel(byte[] packet)
         {
-            var message = new UDPTunnel {packet = packet};
+            var message = new UdpTunnel { packet = packet };
 
 
             MumbleWrite(message);
@@ -174,7 +174,7 @@ namespace Protocol.Mumble
         {
             var message = new UserState();
 
-            if (channel != null) { message.channel_id = channel.ID; }
+            if (channel != null) { message.channel_id = channel.Id; }
 
             MumbleWrite(message);
         }
@@ -190,8 +190,8 @@ namespace Protocol.Mumble
         {
             var message = new TextMessage { message = text };
 
-            if (channels != null) { message.channel_id.AddRange(channels.Select(channel => channel.ID)); }
-            if (trees != null) { message.tree_id.AddRange(trees.Select(channel => channel.ID)); }
+            if (channels != null) { message.channel_id.AddRange(channels.Select(channel => channel.Id)); }
+            if (trees != null) { message.tree_id.AddRange(trees.Select(channel => channel.Id)); }
             if (users != null) { message.session.AddRange(users.Select(user => user.Session)); }
 
             MumbleWrite(message);
@@ -204,9 +204,9 @@ namespace Protocol.Mumble
             MumbleWrite(message);
         }
 
-        public void SendACL()
+        public void SendAcl()
         {
-            var message = new ACL();
+            var message = new Acl();
 
             MumbleWrite(message);
         }
@@ -295,7 +295,7 @@ namespace Protocol.Mumble
             MumbleWrite(message);
         }
 
-        #endregion
+        #endregion Public Send Methods
 
         #region Private Methods
 
@@ -342,8 +342,7 @@ namespace Protocol.Mumble
             if (!_connected) { return; }
 
             var sslStreamWriter = new BinaryWriter(_sslStream);
-            var tunnel = message as UDPTunnel;
-            if (tunnel != null)
+            if (message is UdpTunnel tunnel)
             {
                 var audioMessage = tunnel;
 
@@ -380,9 +379,9 @@ namespace Protocol.Mumble
                 Int16 type = IPAddress.NetworkToHostOrder(sslStreamReader.ReadInt16());
                 Int32 size = IPAddress.NetworkToHostOrder(sslStreamReader.ReadInt32());
 
-                if (type == (int)MessageTypes.UDPTunnel)
+                if (type == (int)MessageTypes.UdpTunnel)
                 {
-                    result = new UDPTunnel { packet = sslStreamReader.ReadBytes(size) };
+                    result = new UdpTunnel { packet = sslStreamReader.ReadBytes(size) };
                 }
                 else
                 {
@@ -397,7 +396,7 @@ namespace Protocol.Mumble
             return result;
         }
 
-        #endregion
+        #endregion Private Methods
 
         public void Dispose()
         {

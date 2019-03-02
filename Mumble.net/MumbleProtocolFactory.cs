@@ -8,10 +8,10 @@ namespace Protocol.Mumble
 {
     class MumbleProtocolFactory
     {
-        private static readonly Dictionary<MessageTypes, Type> Types = new Dictionary<MessageTypes, Type> 
+        private static readonly Dictionary<MessageTypes, Type> Types = new Dictionary<MessageTypes, Type>
         {
             { MessageTypes.Version, typeof(Version) },
-            { MessageTypes.UDPTunnel, typeof(UDPTunnel) },
+            { MessageTypes.UdpTunnel, typeof(UdpTunnel) },
             { MessageTypes.Authenticate, typeof(Authenticate) },
             { MessageTypes.Ping, typeof(Ping) },
             { MessageTypes.Reject, typeof(Reject) },
@@ -23,7 +23,7 @@ namespace Protocol.Mumble
             { MessageTypes.BanList, typeof(BanList) },
             { MessageTypes.TextMessage, typeof(TextMessage) },
             { MessageTypes.PermissionDenied, typeof(PermissionDenied) },
-            { MessageTypes.ACL, typeof(ACL) },
+            { MessageTypes.Acl, typeof(Acl) },
             { MessageTypes.QueryUsers, typeof(QueryUsers) },
             { MessageTypes.CryptSetup, typeof(CryptSetup) },
             { MessageTypes.ContextActionModify, typeof(ContextActionModify) },

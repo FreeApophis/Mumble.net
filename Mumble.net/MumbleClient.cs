@@ -19,8 +19,8 @@ namespace Protocol.Mumble
         public string Version { get; }
 
         public uint ServerVersion;
-        public string ServerOS { get; private set; }
-        public string ServerOSVersion { get; private set; }
+        public string ServerOs { get; private set; }
+        public string ServerOsVersion { get; private set; }
         public string ServerRelease { get; set; }
 
         public string WelcomeText { get; private set; }
@@ -54,8 +54,8 @@ namespace Protocol.Mumble
 
         public void Update(Version message)
         {
-            ServerOS = message.os;
-            ServerOSVersion = message.os;
+            ServerOs = message.os;
+            ServerOsVersion = message.os;
             ServerRelease = message.release;
             ServerVersion = message.version;
         }

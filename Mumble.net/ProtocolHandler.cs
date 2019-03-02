@@ -22,7 +22,7 @@ namespace Protocol.Mumble
             {
                 if (!property.IsDefined(typeof(ProtoBuf.ProtoMemberAttribute), false)) { continue; }
 
-                var specified = properties.Where(p => p.Name == property.Name + "Specified").FirstOrDefault();
+                var specified = properties.FirstOrDefault(p => p.Name == property.Name + "Specified");
                 bool? hasField = null;
                 if (specified != null)
                 {
@@ -60,7 +60,7 @@ namespace Protocol.Mumble
         }
     }
 
-    public partial class UDPTunnel : IProtocolHandler
+    public partial class UdpTunnel : IProtocolHandler
     {
         public void HandleMessage(MumbleClient client)
         {
@@ -129,8 +129,7 @@ namespace Protocol.Mumble
     {
         public void HandleMessage(MumbleClient client)
         {
-            MumbleChannel channel;
-            if (!client.Channels.TryGetValue(channel_id, out channel))
+            if (!client.Channels.TryGetValue(channel_id, out var channel))
             {
                 channel = new MumbleChannel(client, this);
             }
@@ -143,8 +142,7 @@ namespace Protocol.Mumble
     {
         public void HandleMessage(MumbleClient client)
         {
-            MumbleUser user;
-            if (client.Users.TryGetValue(session, out user))
+            if (client.Users.TryGetValue(session, out var user))
             {
                 user.Update(this);
             }
@@ -157,8 +155,7 @@ namespace Protocol.Mumble
     {
         public void HandleMessage(MumbleClient client)
         {
-            MumbleUser user;
-            if (!client.Users.TryGetValue(session, out user))
+            if (!client.Users.TryGetValue(session, out var user))
             {
                 user = new MumbleUser(client, this);
             }
@@ -190,7 +187,7 @@ namespace Protocol.Mumble
         }
     }
 
-    public partial class ACL : IProtocolHandler
+    public partial class Acl : IProtocolHandler
     {
         public void HandleMessage(MumbleClient client)
         {

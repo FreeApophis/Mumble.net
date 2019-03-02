@@ -95,9 +95,9 @@ namespace Protocol.Mumble
   }
   
   [global::System.Serializable, global::ProtoBuf.ProtoContract(Name=@"UDPTunnel")]
-  public partial class UDPTunnel : global::ProtoBuf.IExtensible
+  public partial class UdpTunnel : global::ProtoBuf.IExtensible
   {
-    public UDPTunnel() {}
+    public UdpTunnel() {}
     
     private byte[] _packet;
     [global::ProtoBuf.ProtoMember(1, IsRequired = true, Name=@"packet", DataFormat = global::ProtoBuf.DataFormat.Default)]
@@ -1610,9 +1610,9 @@ namespace Protocol.Mumble
   }
   
   [global::System.Serializable, global::ProtoBuf.ProtoContract(Name=@"ACL")]
-  public partial class ACL : global::ProtoBuf.IExtensible
+  public partial class Acl : global::ProtoBuf.IExtensible
   {
-    public ACL() {}
+    public Acl() {}
     
     private uint _channel_id;
     [global::ProtoBuf.ProtoMember(1, IsRequired = true, Name=@"channel_id", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]

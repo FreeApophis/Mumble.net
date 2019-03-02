@@ -1,13 +1,13 @@
 ﻿using System;
 using Protocol.Mumble;
 
-namespace Mumble.net.app
+namespace MumbleExample
 {
     class Program
     {
         static void Main(string[] args)
         {
-            
+
             var client = new MumbleClient("Mumble.net", "ciphershed.org", "Test");
 
             client.Connect();

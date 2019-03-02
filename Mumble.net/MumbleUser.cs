@@ -29,7 +29,7 @@ namespace Protocol.Mumble
 
         public void Update(UserState message)
         {
-            if (message.channel_idSpecified && message.channel_id != Channel.ID)
+            if (message.channel_idSpecified && message.channel_id != Channel.Id)
             {
                 Channel.RemoveLocalUser(this);
                 Channel = _client.Channels[message.channel_id];

@@ -1,46 +1,45 @@
-﻿
-namespace Protocols.Mumble
+﻿namespace Protocol.Mumble
 {
     class Permission
     {
         #region Local Permissions
         // Write access to channel control. Implies all other permissions (except Speak).
-        public bool CanWritePermissions { get; private set; }
-        // Traverse channel. Without this, a client cannot reach subchannels, no matter which privileges he has there.
-        public bool CanTraverse { get; private set; }
+        public bool CanWritePermissions { get; }
+        // Traverse channel. Without this, a client cannot reach sub-channels, no matter which privileges he has there.
+        public bool CanTraverse { get; }
         // Can enter channel.
-        public bool CanEnter { get; private set; }
-        // Can speek in channel.
-        public bool CanSpeak { get; private set; }
+        public bool CanEnter { get; }
+        // Can speak in channel.
+        public bool CanSpeak { get; }
         // Whisper to channel. This is different from Speak, so you can set up different permissions.
-        public bool CanWhisper { get; private set; }
+        public bool CanWhisper { get; }
         // Mute and deafen other users in this channel.
-        public bool CanMuteDeafen { get; private set; }
-        // Move users from channel. You need this permission in both the source and destination channel to move anoth$
-        public bool CanMove { get; private set; }
-        // Make new channel as a subchannel of this channel.
-        public bool CanMakeChannel { get; private set; }
-        // Make new temporary channel as a subchannel of this channel.
-        public bool CanMakeTempChannel { get; private set; }
-        // Link this channel. You need this permission in both the source and destination channel to link channels, o$
-        public bool CanLinkChannel { get; private set; }
+        public bool CanMuteDeafen { get; }
+        // Move users from channel. You need this permission in both the source and destination channel to move another channel
+        public bool CanMove { get; }
+        // Make new channel as a sub-channel of this channel.
+        public bool CanMakeChannel { get; }
+        // Make new temporary channel as a sub-channel of this channel.
+        public bool CanMakeTempChannel { get; }
+        // Link this channel. You need this permission in both the source and destination channel to link channels, ...
+        public bool CanLinkChannel { get; }
         // Kick user from server. Only valid on root channel.
-        public bool CanTextMessage { get; private set; }
-        #endregion
+        public bool CanTextMessage { get; }
+        #endregion Local Permissions
 
         #region Global Permissions: Only valid on root channel.
         // Kick user from server.
-        public bool CanKick { get; private set; }
+        public bool CanKick { get; }
         // Ban user from server.
-        public bool CanBan { get; private set; }
-        // Register and unregister other users.
-        public bool CanRegister { get; private set; }
-        // Register and unregister self.
-        public bool CanRegisterSelf { get; private set; }
-        #endregion
+        public bool CanBan { get; }
+        // Register and un-register other users.
+        public bool CanRegister { get; }
+        // Register and ubn.register self.
+        public bool CanRegisterSelf { get; }
+        #endregion Global Permissions: Only valid on root channel.
 
         // cached
-        public bool Cached { get; private set; }
+        public bool Cached { get; }
 
         Permission(uint permission)
         {

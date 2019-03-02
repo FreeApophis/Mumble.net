@@ -3,7 +3,7 @@
     enum MessageTypes
     {
         Version = 0,
-        UDPTunnel = 1,
+        UdpTunnel = 1,
         Authenticate = 2,
         Ping = 3,
         Reject = 4,
@@ -15,7 +15,7 @@
         BanList = 10,
         TextMessage = 11,
         PermissionDenied = 12,
-        ACL = 13,
+        Acl = 13,
         QueryUsers = 14,
         CryptSetup = 15,
         ContextActionModify = 16,

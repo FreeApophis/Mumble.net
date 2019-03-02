@@ -2,14 +2,16 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <RootNamespace>Mumble</RootNamespace>
+    <RootNamespace>Protocol.Mumble</RootNamespace>
     <Authors>Thomas Bruderer</Authors>
     <Company>apophis.ch</Company>
     <Description>.NET Interface Library to the Mumble Client Protocol</Description>
+    <PackageLicenseExpression>LGPL-3.0-only</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/FreeApophis/Mumble.net</PackageProjectUrl>
     <RepositoryUrl>https://github.com/FreeApophis/Mumble.net</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>mumble</PackageTags>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>

@@ -4,12 +4,6 @@ using System.Linq;
 
 namespace Protocol.Mumble
 {
-    public struct TypeTarget
-    {
-        public int Type;
-        public int Target;
-    }
-
     public class AudioPacket
     {
         private int _index;
@@ -20,15 +14,9 @@ namespace Protocol.Mumble
 
         public byte[] Payload
         {
-            get
-            {
-                return _packet.Skip(_index).ToArray();
-            }
+            get => _packet.Skip(_index).ToArray();
 
-            set
-            {
-                _encoderPacket.AddRange(value);
-            }
+            set => _encoderPacket.AddRange(value);
         }
 
 
@@ -69,7 +57,7 @@ namespace Protocol.Mumble
                 value = ~value;
                 if (value <= 0x3)
                 {
-                    // Shortcase for -1 to -4
+                    // Short case for -1 to -4
                     _encoderPacket.Add((byte)(0xFC | value));
                     return;
                 }

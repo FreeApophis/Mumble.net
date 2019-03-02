@@ -5,7 +5,6 @@ using System.Linq;
 
 namespace Protocol.Mumble
 {
-
     public class MumbleChannel
     {
         private MumbleClient _client;
@@ -19,16 +18,16 @@ namespace Protocol.Mumble
         public ReadOnlyCollection<MumbleUser> Users => new ReadOnlyCollection<MumbleUser>(_users);
 
         public string Name { get; }
-        public uint ID { get; }
+        public uint Id { get; }
 
         public MumbleChannel(MumbleClient client, ChannelState message)
         {
             _client = client;
 
-            ID = message.channel_id;
+            Id = message.channel_id;
             Name = message.name;
 
-            client.Channels.Add(ID, this);
+            client.Channels.Add(Id, this);
             client.Channels.TryGetValue(message.parent, out _parentChannel);
 
             if (IsRoot())
@@ -64,7 +63,7 @@ namespace Protocol.Mumble
 
         public string Tree(int level = 0)
         {
-            string result = $"{new String(' ', level)}C {Name} ({ID}){Environment.NewLine}";
+            string result = $"{new String(' ', level)}C {Name} ({Id}){Environment.NewLine}";
 
             result = _subChannels.Aggregate(result, (current, channel) => current + channel.Tree(level + 1));
 
