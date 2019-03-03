@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>Mumble</RootNamespace>
+    <Authors>Thomas Bruderer</Authors>
+    <Company>apophis.ch</Company>
+    <Description>.NET Interface Library to the Mumble Client Protocol</Description>
+    <PackageProjectUrl>https://github.com/FreeApophis/Mumble.net</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/FreeApophis/Mumble.net</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>mumble</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="protobuf-net" Version="2.1.0" />
+  </ItemGroup>
+
+</Project>
